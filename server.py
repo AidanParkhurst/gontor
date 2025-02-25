@@ -1,0 +1,34 @@
+"""
+server.py
+---------
+Script principal para ejecutar la simulación.
+Simula el entorno y comunica con el cliente de unity por websockets.
+"""
+import asyncio
+from websockets.asyncio.server import serve
+import json
+
+from entorno import Entorno
+
+async def handler(websocket):
+    async for message in websocket:
+        data = json.loads(message)
+        # Default: 1 robot, 30x53 almacen 
+        num_agents = int(data.get("num_agents", 1))
+        width = int(data.get("width", 30))
+        length = int(data.get("length", 53))
+        entorno = Entorno(num_agents, width, length)
+
+        for i in range(1000):
+            entorno.step()
+
+        response = {"message": "Hello, client!"}
+        await websocket.send(json.dumps(response))
+
+async def main():
+    # Esperar a que el cliente se conecte
+    async with serve(handler, "localhost", 8765) as server:
+        await server.serve_forever()
+
+if __name__ == "__main__":
+    asyncio.run(main())
