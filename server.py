@@ -5,6 +5,7 @@ Script principal para ejecutar la simulación.
 Simula el entorno y comunica con el cliente de unity por websockets.
 """
 import asyncio
+import time
 from websockets.asyncio.server import serve
 import json
 
@@ -19,11 +20,15 @@ async def handler(websocket):
         length = int(data.get("length", 53))
         entorno = Entorno(num_agents, width, length)
 
-        for i in range(1000):
-            entorno.step()
+        rutas = []
+        for agent in entorno.agents:
+            rutas.append(agent.ruta)
+        response = {"rutas": rutas}
 
-        response = {"message": "Hello, client!"}
         await websocket.send(json.dumps(response))
+        
+        for i in range(50):
+            entorno.step()
 
 async def main():
     # Esperar a que el cliente se conecte

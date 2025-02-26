@@ -7,13 +7,14 @@ un punto de recogida y entrega.
 """
 
 from mesa import Model
-from mesa.space import SingleGrid
+from mesa.space import MultiGrid
 
 from robot import Robot
 
 class Entorno(Model):
     punto_recogida = (0, 0)
     punto_entrega = (0, 0)
+    obstaculos = []
     
     def __init__(self, n, width, height, punto_recogida = (0,0), punto_entrega = None, seed = None):
         super().__init__(seed=seed)
@@ -22,19 +23,28 @@ class Entorno(Model):
         self.punto_entrega = punto_entrega if punto_entrega else (width-1, height-1)
 
         self.num_agents = n
-        self.grid = SingleGrid(width, height, torus=False)
+        self.grid = MultiGrid(width, height, torus=False)
         self.running = True
 
+        for i in range(10):
+            x = self.random.randrange(self.grid.width)
+            y = self.random.randrange(self.grid.height)
+            while (x,y) in [self.punto_recogida, self.punto_entrega] or (x,y) in self.obstaculos:
+                x = self.random.randrange(self.grid.width)
+                y = self.random.randrange(self.grid.height) 
+            self.obstaculos.append((x,y))
+            
         for i in range(self.num_agents):
             a = Robot(self)
 
             x = self.random.randrange(self.grid.width)
             y = self.random.randrange(self.grid.height)
-            while not self.grid.is_cell_empty((x, y)):
+            while not self.grid.is_cell_empty((x, y)) or (x,y) in self.obstaculos:
                 x = self.random.randrange(self.grid.width)
                 y = self.random.randrange(self.grid.height) 
 
             self.grid.place_agent(a, (x, y))
+            a.update_ruta() # Generar ruta inicial
 
     def step(self):
         self.agents.shuffle_do("step")
@@ -42,16 +52,18 @@ class Entorno(Model):
 
     def print_state(self):
         print("Entorno:")
-        for i in range(self.grid.width):
-            for j in range(self.grid.height):
-                if (i,j) == self.punto_recogida:
+        for linea in range(self.grid.height-1, -1, -1):
+            for i in range(self.grid.width):
+                if (i,linea) == self.punto_recogida:
                     print("I", end="")
-                elif (i,j) == self.punto_entrega:
+                elif (i,linea) == self.punto_entrega:
                     print("M", end="")
-                elif self.grid.is_cell_empty((i, j)):
+                elif (i,linea) in self.obstaculos:
+                    print("X", end="")
+                elif self.grid.is_cell_empty((i, linea)):
                     print("-", end="")
                 else:
-                    if self.grid.get_cell_list_contents((i, j))[0].tiene_paquete:
+                    if self.grid.get_cell_list_contents((i, linea))[0].tiene_paquete:
                         print("P", end="")
                     else:
                         print("R", end="")

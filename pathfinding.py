@@ -8,7 +8,16 @@ def aestrella(entorno, inicio, fin):
             self.padre = padre
             self.g = 0 if not padre else padre.g + 1
             self.h = abs(pos[0] - goal[0]) + abs(pos[1] - goal[1])
-            self.f = self.g + self.h
+            self.x = self.evitar()
+            self.f = self.g + self.h + self.x
+
+        def evitar(self):
+            # Si la celda actual está ocupada por un obstáculo, asignar un costo muy alto
+            costo_obstaculo = 1000000 if (self.pos in entorno.obstaculos) else 0
+            # Si la celda actual está en muchas rutas, asignar un costo alto
+            costo_agentes = sum([10 for agent in entorno.agents if self.pos in agent.ruta])
+
+            return costo_obstaculo + costo_agentes
 
         def __eq__(self, other):
             return self.pos == other.pos
