@@ -36,8 +36,9 @@ async def handler(websocket):
             # y1,y2,y3,y4
             for i, agent in enumerate(entorno.agents):
                 with open(f"./rutas/rutas{i}.txt", "w") as f:
-                    x = [x for x,y in agent.ruta]
-                    y = [y for x,y in agent.ruta]
+                    # En el robotario, (0,0) esta en el centro, restar el medio del ancho y alto del almacen
+                    x = [x-(entorno.grid.width/2.0) for x,y in agent.ruta]
+                    y = [y-(entorno.grid.height/2.0) for x,y in agent.ruta]
                     f.write(",".join(map(str, x)) + "\n")
                     f.write(",".join(map(str, y)) + "\n")
 
