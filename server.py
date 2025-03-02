@@ -19,6 +19,7 @@ async def handler(websocket):
         width = int(data.get("width", 30))
         length = int(data.get("length", 53))
         obstaculos = data.get("obstacles", [])
+        generar_txt = data.get("generate_txt", False)
         entorno = Entorno(num_agents, width, length, obstaculos=obstaculos)
 
         rutas = []
@@ -27,7 +28,19 @@ async def handler(websocket):
         response = {"rutas": rutas}
 
         await websocket.send(json.dumps(response))
-        
+
+        if generar_txt:
+            # Crear un archivo de texto con las rutas
+            # de la forma:
+            # x1,x2,x3,x4
+            # y1,y2,y3,y4
+            for i, agent in enumerate(entorno.agents):
+                with open(f"./rutas/rutas{i}.txt", "w") as f:
+                    x = [x for x,y in agent.ruta]
+                    y = [y for x,y in agent.ruta]
+                    f.write(",".join(map(str, x)) + "\n")
+                    f.write(",".join(map(str, y)) + "\n")
+
         for i in range(50):
             entorno.step()
 

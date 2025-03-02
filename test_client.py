@@ -23,11 +23,14 @@ async def client():
                 if x.strip() == "": break
                 y = input("Enter y coordinate of obstacle: ")
                 obstacles.append((int(x), int(y)))
+        generate_txt = input("Do you want to generate a txt file with the routes? (y/n) (Default n) ")
+
         data = {
             "num_agents": num_agents if num_agents.strip() != "" else 1,
             "width": width if width.strip() != "" else 30,
             "length": length if length.strip() != "" else 53,
-            "obstacles": obstacles if obstacles else []
+            "obstacles": obstacles if obstacles else [],
+            "generate_txt": generate_txt.lower().strip() == "y"
             }
         await websocket.send(json.dumps(data))
         response = await websocket.recv()
