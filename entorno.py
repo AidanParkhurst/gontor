@@ -16,7 +16,7 @@ class Entorno(Model):
     punto_entrega = (0, 0)
     obstaculos = []
     
-    def __init__(self, n, width, height, punto_recogida = (0,0), punto_entrega = None, seed = None):
+    def __init__(self, n, width, height, punto_recogida = (0,0), punto_entrega = None, obstaculos = [], seed = None):
         super().__init__(seed=seed)
 
         self.punto_recogida = punto_recogida
@@ -26,14 +26,10 @@ class Entorno(Model):
         self.grid = MultiGrid(width, height, torus=False)
         self.running = True
 
-        for i in range(10):
-            x = self.random.randrange(self.grid.width)
-            y = self.random.randrange(self.grid.height)
-            while (x,y) in [self.punto_recogida, self.punto_entrega] or (x,y) in self.obstaculos:
-                x = self.random.randrange(self.grid.width)
-                y = self.random.randrange(self.grid.height) 
-            self.obstaculos.append((x,y))
-            
+        # Añadir obstáculos uno por uno, para que sean tuplas y no listas
+        for pair in obstaculos:
+            self.obstaculos.append((pair[0],pair[1]))
+
         for i in range(self.num_agents):
             a = Robot(self)
 

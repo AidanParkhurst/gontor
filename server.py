@@ -18,7 +18,8 @@ async def handler(websocket):
         num_agents = int(data.get("num_agents", 1))
         width = int(data.get("width", 30))
         length = int(data.get("length", 53))
-        entorno = Entorno(num_agents, width, length)
+        obstaculos = data.get("obstacles", [])
+        entorno = Entorno(num_agents, width, length, obstaculos=obstaculos)
 
         rutas = []
         for agent in entorno.agents:
