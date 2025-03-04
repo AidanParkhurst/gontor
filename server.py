@@ -24,9 +24,12 @@ async def handler(websocket):
         generar_txt = data.get("generate_txt", False)
         entorno = Entorno(num_agents, width, length, pos_iniciales=pos_iniciales, obstaculos=obstaculos)
 
+        for i in range(100):
+            entorno.step()
+
         rutas = []
         for agent in entorno.agents:
-            rutas.append(agent.ruta)
+            rutas.append(agent.historia)
         response = {"rutas": rutas}
 
         await websocket.send(json.dumps(response))
@@ -39,13 +42,11 @@ async def handler(websocket):
             for i, agent in enumerate(entorno.agents):
                 with open(f"./rutas/rutas{i}.txt", "w") as f:
                     # En el robotario, (0,0) esta en el centro, restar el medio del ancho y alto del almacen
-                    x = [x-(entorno.grid.width/2.0) for x,y in agent.ruta]
-                    y = [y-(entorno.grid.height/2.0) for x,y in agent.ruta]
+                    x = [x-(entorno.grid.width/2.0) for x,y in agent.historia]
+                    y = [y-(entorno.grid.height/2.0) for x,y in agent.historia]
                     f.write(",".join(map(str, x)) + "\n")
                     f.write(",".join(map(str, y)) + "\n")
 
-        for i in range(50):
-            entorno.step()
 
 async def main():
     # Esperar a que el cliente se conecte

@@ -11,7 +11,7 @@ class Robot(Agent):
     ruta = []
     tiene_paquete = False
     paquetes = 0
-    wait_counter = 0
+    historia = []
 
     def __init__(self, model):
         super().__init__(model)
@@ -46,6 +46,8 @@ class Robot(Agent):
         return False
 
     def step(self):
+        self.historia.append(self.pos)
+
         # Si no hay ruta, generar una nueva
         self.update_ruta()
 
@@ -55,8 +57,6 @@ class Robot(Agent):
         # Si hara robot en la celda destino, esperar según las reglas:
         if self.va_a_chocar(self.ruta[0]):
             self.ruta.insert(0, self.pos)
-            self.wait_counter += 1
-
 
         # Si no hay robot en la celda destino, moverse a la siguiente celda
         self.model.grid.move_agent(self, self.ruta.pop(0))
