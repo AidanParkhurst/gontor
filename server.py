@@ -13,14 +13,16 @@ from entorno import Entorno
 
 async def handler(websocket):
     async for message in websocket:
+        print("Received:", message)
         data = json.loads(message)
         # Default: 1 robot, 30x53 almacen 
         num_agents = int(data.get("num_agents", 1))
+        pos_iniciales = data.get("initial_positions", [])
         width = int(data.get("width", 30))
         length = int(data.get("length", 53))
         obstaculos = data.get("obstacles", [])
         generar_txt = data.get("generate_txt", False)
-        entorno = Entorno(num_agents, width, length, obstaculos=obstaculos)
+        entorno = Entorno(num_agents, width, length, pos_iniciales=pos_iniciales, obstaculos=obstaculos)
 
         rutas = []
         for agent in entorno.agents:

@@ -13,8 +13,18 @@ async def client():
     uri = "ws://localhost:8765"
     async with websockets.connect(uri) as websocket:
         num_agents = input("How many agents do you want? (Default 1) ")
+
+        initial_positions = []
+        for i in range(int(num_agents)):
+            print(f"Agent {i+1}")
+            x = input("Enter x coordinate of initial position (Empty for random): ")
+            y = input("Enter y coordinate of initial position: ")
+            if x.strip() == "": break
+            initial_positions.append((int(x), int(y)))
+
         width = input("How wide do you want the warehouse? (Default 30) ")
         length = input("How long do you want the warehouse? (Default 53) ")
+
         obstacles = []
         add_obstacles = input("Do you want to add obstacles? (y/n) (Default n) ")
         if add_obstacles.lower().strip() == "y":
@@ -41,10 +51,12 @@ async def client():
                     if x.strip() == "": break
                     y = input("Enter y coordinate of obstacle: ")
                     obstacles.append((int(x), int(y)))
+
         generate_txt = input("Do you want to generate a txt file with the routes? (y/n) (Default n) ")
 
         data = {
             "num_agents": num_agents if num_agents.strip() != "" else 1,
+            "initial_positions": initial_positions,
             "width": width if width.strip() != "" else 30,
             "length": length if length.strip() != "" else 53,
             "obstacles": obstacles if obstacles else [],
@@ -123,4 +135,5 @@ async def robotario_client():
 if __name__ == "__main__":
     if input("Modo robotario? (y/n) (Default n) ").lower().strip() == "y":
         asyncio.run(robotario_client())
-    asyncio.run(client())
+    else:
+        asyncio.run(client())
