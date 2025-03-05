@@ -64,6 +64,7 @@ async def client():
             }
         await websocket.send(json.dumps(data))
         response = await websocket.recv()
+        print(json.loads(response).get("metas",[]))
         print(response)
 
 async def robotario_client():

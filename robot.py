@@ -6,28 +6,32 @@ Representa un robot en el almacén.
 
 from mesa import Agent
 from pathfinding import aestrella
+import random
 
 class Robot(Agent):
-    ruta = []
-    tiene_paquete = False
-    paquetes = 0
-    historia = []
 
     def __init__(self, model):
         super().__init__(model)
 
+        self.ruta = []
+        self.tiene_paquete = False
+        self.entregas = 0
+        self.historia = []
+        self.destinos = []
+
+        # Si el robot empieza en el punto de recogida, recoge un paquete
+        if self.pos == self.model.punto_recogida: self.recoge_paquete()
+
+        self.elige_destino()
+
+
     def update_ruta(self):
         if not self.ruta:
-            if self.pos == self.model.punto_recogida:
-                self.tiene_paquete = True 
-            elif self.pos == self.model.punto_entrega:
-                self.tiene_paquete = False
-
-            destino = self.model.punto_entrega if self.tiene_paquete else self.model.punto_recogida
+            destino = self.destinos[-1]
             self.ruta = aestrella(self.model, self.pos, destino)
     
     def force_update_ruta(self,agente_para_evitar):
-        destino = self.model.punto_entrega if self.tiene_paquete else self.model.punto_recogida
+        destino = self.destinos[-1]
         self.ruta = aestrella(self.model, self.pos, destino,agente_para_evitar)
 
     def va_a_chocar(self, destino):
@@ -48,6 +52,9 @@ class Robot(Agent):
     def step(self):
         self.historia.append(self.pos)
 
+        # Si la celda actual es la celda destino, deja o recoge un paquete
+        if self.pos == self.destinos[-1]: self.actuar()
+
         # Si no hay ruta, generar una nueva
         self.update_ruta()
 
@@ -55,17 +62,23 @@ class Robot(Agent):
         if self.pos == self.ruta[0]: self.ruta.pop(0)
 
         # Si hara robot en la celda destino, esperar según las reglas:
-        if self.va_a_chocar(self.ruta[0]):
-            self.ruta.insert(0, self.pos)
+        if self.va_a_chocar(self.ruta[0]): self.ruta.insert(0, self.pos)
 
         # Si no hay robot en la celda destino, moverse a la siguiente celda
         self.model.grid.move_agent(self, self.ruta.pop(0))
 
-        # Si la celda actual es la celda destino, deja o recoge un paquete
-        if self.pos == self.model.punto_recogida:
-            self.tiene_paquete = True
-            print("Recogiendo paquete")
-        elif self.pos == self.model.punto_entrega:
+    
+    def actuar(self):
+        if self.tiene_paquete:
             self.tiene_paquete = False
-            self.paquetes += 1
-            print("Dejando paquete:", self.paquetes)
+            self.entregas += 1
+        else:
+            self.tiene_paquete = True
+
+        self.elige_destino()
+    
+    def elige_destino(self):
+        if self.tiene_paquete:
+            self.destinos.append(random.choice(self.model.puntos_entregas))
+        else:
+            self.destinos.append(self.model.punto_recogida)

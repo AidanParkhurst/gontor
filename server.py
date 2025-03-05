@@ -21,16 +21,22 @@ async def handler(websocket):
         width = int(data.get("width", 30))
         length = int(data.get("length", 53))
         obstaculos = data.get("obstacles", [])
+        metas = data.get("targets", [(width-1, length-1)])
         generar_txt = data.get("generate_txt", False)
-        entorno = Entorno(num_agents, width, length, pos_iniciales=pos_iniciales, obstaculos=obstaculos)
+        entorno = Entorno(num_agents, width, length, pos_iniciales=pos_iniciales, obstaculos=obstaculos, puntos_entregas=metas)
 
         for i in range(100):
             entorno.step()
 
         rutas = []
+        metas = []
         for agent in entorno.agents:
             rutas.append(agent.historia)
-        response = {"rutas": rutas}
+            metas.append(agent.destinos)
+        response = {
+            "rutas": rutas,
+            "metas": metas
+        }
 
         await websocket.send(json.dumps(response))
 

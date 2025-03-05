@@ -13,14 +13,14 @@ from robot import Robot
 
 class Entorno(Model):
     punto_recogida = (0, 0)
-    punto_entrega = (0, 0)
+    puntos_entregas = [(0, 0)]
     obstaculos = []
     
-    def __init__(self, n, width, height, punto_recogida = (0,0), punto_entrega = None, pos_iniciales = [], obstaculos = [], seed = None):
+    def __init__(self, n, width, height, punto_recogida = (0,0), puntos_entregas = None, pos_iniciales = [], obstaculos = [], seed = None):
         super().__init__(seed=seed)
 
         self.punto_recogida = punto_recogida
-        self.punto_entrega = punto_entrega if punto_entrega else (width-1, height-1)
+        self.puntos_entregas = puntos_entregas 
 
         self.num_agents = n
         self.grid = MultiGrid(width, height, torus=False)
@@ -47,7 +47,7 @@ class Entorno(Model):
 
     def step(self):
         self.agents.shuffle_do("step")
-        # self.print_state()
+        self.print_state()
 
     def print_state(self):
         print("Entorno:")
@@ -55,7 +55,7 @@ class Entorno(Model):
             for i in range(self.grid.width):
                 if (i,linea) == self.punto_recogida:
                     print("I", end="")
-                elif (i,linea) == self.punto_entrega:
+                elif (i,linea) in self.puntos_entregas:
                     print("M", end="")
                 elif (i,linea) in self.obstaculos:
                     print("X", end="")
