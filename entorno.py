@@ -20,13 +20,14 @@ class Entorno(Model):
         super().__init__(seed=seed)
 
         self.punto_recogida = punto_recogida
-        self.puntos_entregas = puntos_entregas 
 
         self.num_agents = n
         self.grid = MultiGrid(width, height, torus=False)
         self.running = True
 
-        # Añadir obstáculos uno por uno, para que sean tuplas y no listas
+        # Añadir puntos uno por uno, para que sean tuplas y no listas
+        for pair in puntos_entregas:
+            self.puntos_entregas.append((pair[0],pair[1]))
         for pair in obstaculos:
             self.obstaculos.append((pair[0],pair[1]))
 
