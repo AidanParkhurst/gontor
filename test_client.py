@@ -18,8 +18,8 @@ async def client():
         for i in range(int(num_agents)):
             print(f"Agent {i+1}")
             x = input("Enter x coordinate of initial position (Empty for random): ")
-            y = input("Enter y coordinate of initial position: ")
             if x.strip() == "": break
+            y = input("Enter y coordinate of initial position: ")
             initial_positions.append((int(x), int(y)))
 
         width = input("How wide do you want the warehouse? (Default 30) ")

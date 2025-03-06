@@ -9,7 +9,6 @@ from pathfinding import aestrella
 import random
 
 class Robot(Agent):
-
     def __init__(self, model):
         super().__init__(model)
 
@@ -20,13 +19,13 @@ class Robot(Agent):
         self.destinos = []
 
         # Si el robot empieza en el punto de recogida, recoge un paquete
-        if self.pos == self.model.punto_recogida: self.recoge_paquete()
+        if self.pos == self.model.punto_recogida: self.actuar()
 
         self.elige_destino()
 
 
     def update_ruta(self):
-        if not self.ruta:
+        if len(self.ruta) < 1:
             destino = self.destinos[-1]
             self.ruta = aestrella(self.model, self.pos, destino)
     
@@ -51,15 +50,13 @@ class Robot(Agent):
 
     def step(self):
         self.historia.append(self.pos)
-
+        print("Ruta:", self.ruta)
+        print("Meta", self.destinos[-1])
         # Si la celda actual es la celda destino, deja o recoge un paquete
         if self.pos == self.destinos[-1]: self.actuar()
 
         # Si no hay ruta, generar una nueva
         self.update_ruta()
-
-        # Si la celda actual es la siguiente celda de la ruta, quitarla de la ruta 
-        if self.pos == self.ruta[0]: self.ruta.pop(0)
 
         # Si hara robot en la celda destino, esperar según las reglas:
         if self.va_a_chocar(self.ruta[0]): self.ruta.insert(0, self.pos)
