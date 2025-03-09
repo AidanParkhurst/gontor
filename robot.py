@@ -50,8 +50,8 @@ class Robot(Agent):
 
     def step(self):
         self.historia.append(self.pos)
-        print("Ruta:", self.ruta)
-        print("Meta", self.destinos[-1])
+        # print("Ruta:", self.ruta)
+        # print("Meta", self.destinos[-1])
         # Si la celda actual es la celda destino, deja o recoge un paquete
         if self.pos == self.destinos[-1]: self.actuar()
 
@@ -62,7 +62,8 @@ class Robot(Agent):
         if self.va_a_chocar(self.ruta[0]): self.ruta.insert(0, self.pos)
 
         # Si no hay robot en la celda destino, moverse a la siguiente celda
-        self.model.grid.move_agent(self, self.ruta.pop(0))
+        if self.ruta:
+            self.model.grid.move_agent(self, self.ruta.pop(0))
 
     
     def actuar(self):

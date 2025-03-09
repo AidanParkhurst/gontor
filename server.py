@@ -33,6 +33,7 @@ async def handler(websocket):
         for agent in entorno.agents:
             rutas.append(agent.historia)
             metas.append(agent.destinos)
+        # print(len(rutas), len(metas))
         response = {
             "rutas": rutas,
             "metas": metas
