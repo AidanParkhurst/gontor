@@ -13,7 +13,7 @@ from robot import Robot
 
 class Entorno(Model):
     punto_recogida = (0, 0)
-    puntos_entregas = [(0, 0)]
+    puntos_entregas = []
     obstaculos = []
     
     def __init__(self, n, width, height, punto_recogida = (0,0), puntos_entregas = None, pos_iniciales = [], obstaculos = [], seed = None):
