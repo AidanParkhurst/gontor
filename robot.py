@@ -36,7 +36,7 @@ class Robot(Agent):
     
     def force_update_ruta(self,agentes_para_evitar):
         destino = self.destinos[-1]
-        self.ruta = aestrella(self.model, self.pos, destino,agentes_para_evitar)
+        self.ruta = aestrella(self.model, self.pos, destino, agentes_para_evitar)
 
     def va_a_chocar(self, destino):
         agentes_para_evitar = []
@@ -45,13 +45,15 @@ class Robot(Agent):
                 agentes_para_evitar.append(agent)
         
         if agentes_para_evitar:
-            agentes_no_atrapados = [agent for agent in agentes_para_evitar if not agent.atrapado]
-            if not self.atrapado: agentes_no_atrapados.append(self)
-            agente_ids = [agent.id for agent in agentes_no_atrapados]
-
-            # Si este id es el menor y no está atrapado, va primero
-            if self.id == min(agente_ids):
+            otro_robot_es_especial = False
+            for agent in agentes_para_evitar:
+                otro_robot_es_especial = otro_robot_es_especial or (agent.pos == self.model.punto_recogida or (agent.pos in self.model.puntos_entregas))
+            punto_especial = self.pos == self.model.punto_recogida or (self.pos in self.model.puntos_entregas)
+            especial = punto_especial and not otro_robot_es_especial
+            if especial or (not especial and self.id < min([agent.id for agent in agentes_para_evitar])):
+                print(f"Robot {self.id} wins the tie!")
                 self.force_update_ruta(agentes_para_evitar)
+                print(self.ruta)
                 return False
 
             # Por los demas, esperar
@@ -73,11 +75,8 @@ class Robot(Agent):
 
         # Si no hay ruta, el robot está atrapado
         if not self.ruta:
-            print("Robot", self.id, "atrapado")
-            self.atrapado = True
             return
  
-        self.atrapado = False
         self.model.grid.move_agent(self, self.ruta.pop(0))
 
     

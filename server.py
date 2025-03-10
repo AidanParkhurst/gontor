@@ -23,7 +23,7 @@ async def handler(websocket):
         obstaculos = data.get("obstacles", [])
         metas = data.get("targets", [(width-1, length-1)])
         generar_txt = data.get("generate_txt", False)
-        entorno = Entorno(num_agents, width, length, pos_iniciales=pos_iniciales, obstaculos=obstaculos, puntos_entregas=metas)
+        entorno = Entorno(num_agents, width, length, punto_recogida=(1,1), pos_iniciales=pos_iniciales, obstaculos=obstaculos, puntos_entregas=metas)
 
         for i in range(100):
             entorno.step()
