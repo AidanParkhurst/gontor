@@ -32,7 +32,7 @@ class Entorno(Model):
             self.obstaculos.append((pair[0],pair[1]))
 
         for i in range(self.num_agents):
-            a = Robot(self)
+            a = Robot(self, i)
 
             if i < len(pos_iniciales):
                 x, y = pos_iniciales[i]

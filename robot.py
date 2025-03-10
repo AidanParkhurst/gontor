@@ -9,9 +9,10 @@ from pathfinding import aestrella
 import random
 
 class Robot(Agent):
-    def __init__(self, model):
+    def __init__(self, model, id):
         super().__init__(model)
 
+        self.id = id
         self.ruta = []
         self.tiene_paquete = False
         self.entregas = 0
@@ -25,28 +26,40 @@ class Robot(Agent):
 
 
     def update_ruta(self):
-        if len(self.ruta) < 1:
+        # Si no hay ruta, generar una nueva
+        if not self.ruta:
             destino = self.destinos[-1]
             self.ruta = aestrella(self.model, self.pos, destino)
+        else:   
+            # Si hay ruta, y va a chocar con otro robot, espera o cambia de ruta
+            if self.va_a_chocar(self.ruta[0]): self.ruta.insert(0, self.pos)
     
-    def force_update_ruta(self,agente_para_evitar):
+    def force_update_ruta(self,agentes_para_evitar):
         destino = self.destinos[-1]
-        self.ruta = aestrella(self.model, self.pos, destino,agente_para_evitar)
+        self.ruta = aestrella(self.model, self.pos, destino,agentes_para_evitar)
 
     def va_a_chocar(self, destino):
+        agentes_para_evitar = []
         for agent in self.model.agents:
-            if agent != self and agent.ruta and (agent.ruta[0] == destino or agent.pos == destino):
-                paquete_diff = (self.tiene_paquete != agent.tiene_paquete) and self.tiene_paquete
-                x_diff = (self.pos[0] != agent.pos[0]) and self.pos[0] < agent.pos[0]
+            if agent != self and (agent.pos == destino or (agent.ruta and agent.ruta[0] == destino)):
+                agentes_para_evitar.append(agent)
+        
+        if agentes_para_evitar:
+            agentes_no_atrapados = [agent for agent in agentes_para_evitar if not agent.atrapado]
+            if not self.atrapado: agentes_no_atrapados.append(self)
+            agente_ids = [agent.id for agent in agentes_no_atrapados]
 
-                if (paquete_diff or (not paquete_diff and x_diff) \
-                    or (not paquete_diff and not x_diff and self.pos[1] < agent.pos[1])):
-                    self.force_update_ruta(agent)
-                    return False
+            # Si este id es el menor y no está atrapado, va primero
+            if self.id == min(agente_ids):
+                self.force_update_ruta(agentes_para_evitar)
+                return False
 
-                return True
+            # Por los demas, esperar
+            return True
 
+        # No va a chocar
         return False
+
 
     def step(self):
         self.historia.append(self.pos)
@@ -58,12 +71,14 @@ class Robot(Agent):
         # Si no hay ruta, generar una nueva
         self.update_ruta()
 
-        # Si hara robot en la celda destino, esperar según las reglas:
-        if self.va_a_chocar(self.ruta[0]): self.ruta.insert(0, self.pos)
-
-        # Si no hay robot en la celda destino, moverse a la siguiente celda
-        if self.ruta:
-            self.model.grid.move_agent(self, self.ruta.pop(0))
+        # Si no hay ruta, el robot está atrapado
+        if not self.ruta:
+            print("Robot", self.id, "atrapado")
+            self.atrapado = True
+            return
+ 
+        self.atrapado = False
+        self.model.grid.move_agent(self, self.ruta.pop(0))
 
     
     def actuar(self):
