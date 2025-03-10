@@ -49,7 +49,16 @@ class Entorno(Model):
 
     def step(self):
         self.agents.shuffle_do("step")
+        # self.detail_collisions()
         # self.print_state()
+        
+    def detail_collisions(self):
+        posiciones = [agent.pos for agent in self.agents]
+        if len(posiciones) != len(set(posiciones)):
+            print("COLISIONES")
+            print(posiciones)
+            print([posiciones.count(pos) for pos in posiciones])
+            print()
 
     def print_state(self):
         print("Entorno:")

@@ -73,8 +73,6 @@ class Robot(Agent):
         # print("Robot:",self.id,"Tiene paquete:", self.tiene_paquete)
         # print("Robot:",self.id,"Ruta:", self.ruta)
         # print("Robot:",self.id,"Meta", self.destinos[-1])
-        # Si la celda actual es la celda destino, deja o recoge un paquete
-        if self.pos == self.destinos[-1]: self.actuar()
 
         # Si no hay ruta, generar una nueva
         self.update_ruta()
@@ -85,13 +83,15 @@ class Robot(Agent):
  
         self.model.grid.move_agent(self, self.ruta.pop(0))
 
+        # Si la celda actual es la celda destino, deja o recoge un paquete
+        if self.pos == self.destinos[-1]: self.actuar()
     
     def actuar(self):
         if self.tiene_paquete:
             self.tiene_paquete = False
             self.entregas += 1
             self.model.entregas += 1
-            # print(self.model.entregas)
+            print(self.model.entregas)
         else:
             self.tiene_paquete = True
 
