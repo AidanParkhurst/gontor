@@ -15,6 +15,7 @@ class Entorno(Model):
     punto_recogida = (0, 0)
     puntos_entregas = []
     obstaculos = []
+    entregas = 0
     
     def __init__(self, n, width, height, punto_recogida = (0,0), puntos_entregas = None, pos_iniciales = [], obstaculos = [], seed = None):
         super().__init__(seed=seed)
@@ -48,7 +49,7 @@ class Entorno(Model):
 
     def step(self):
         self.agents.shuffle_do("step")
-        self.print_state()
+        # self.print_state()
 
     def print_state(self):
         print("Entorno:")

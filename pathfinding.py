@@ -55,7 +55,7 @@ def aestrella(entorno, inicio, fin, agentes_para_evitar=None):
                 camino.append(nodo_actual.pos)
                 nodo_actual = nodo_actual.padre
             
-            print("Camino:", camino[::-1])
+            # print("Camino:", camino[::-1])
             return camino[::-1][1:]
         # Generar los nodos sucesores
         for vecino in entorno.grid.get_neighborhood(nodo_actual.pos, moore=False, include_center=False):

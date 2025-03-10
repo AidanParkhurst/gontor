@@ -48,17 +48,16 @@ class Robot(Agent):
                 agentes_para_evitar.append(agent)
         
         if agentes_para_evitar:
-            print(f"Robot {self.id} va a chocar con {len(agentes_para_evitar)} agentes")
+            # print(f"Robot {self.id} va a chocar con {len(agentes_para_evitar)} agentes")
             otro_robot_es_especial = False
             for agent in agentes_para_evitar:
                 otro_robot_es_especial = otro_robot_es_especial or (agent.pos == self.model.punto_recogida or (agent.pos in self.model.puntos_entregas))
             punto_especial = (self.pos == self.model.punto_recogida) or (self.pos in self.model.puntos_entregas)
             especial = punto_especial and not otro_robot_es_especial
-            print(f"Robot {self.id} es especial: {especial}")
+            # print(f"Robot {self.id} es especial: {especial}")
             if especial or (not especial and self.id < min([agent.id for agent in agentes_para_evitar])):
-                print(f"Robot {self.id} wins the tie!")
+                # print(f"Robot {self.id} wins the tie!")
                 self.force_update_ruta(agentes_para_evitar)
-                print(self.ruta)
                 return False
 
             # Por los demas, esperar
@@ -70,10 +69,10 @@ class Robot(Agent):
 
     def step(self):
         self.historia.append(self.pos)
-        print("Robot:",self.id,"Pos:", self.pos)
-        print("Robot:",self.id,"Tiene paquete:", self.tiene_paquete)
-        print("Robot:",self.id,"Ruta:", self.ruta)
-        print("Robot:",self.id,"Meta", self.destinos[-1])
+        # print("Robot:",self.id,"Pos:", self.pos)
+        # print("Robot:",self.id,"Tiene paquete:", self.tiene_paquete)
+        # print("Robot:",self.id,"Ruta:", self.ruta)
+        # print("Robot:",self.id,"Meta", self.destinos[-1])
         # Si la celda actual es la celda destino, deja o recoge un paquete
         if self.pos == self.destinos[-1]: self.actuar()
 
@@ -91,6 +90,8 @@ class Robot(Agent):
         if self.tiene_paquete:
             self.tiene_paquete = False
             self.entregas += 1
+            self.model.entregas += 1
+            # print(self.model.entregas)
         else:
             self.tiene_paquete = True
 
@@ -101,3 +102,5 @@ class Robot(Agent):
             self.destinos.append(random.choice(self.model.puntos_entregas))
         else:
             self.destinos.append(self.model.punto_recogida)
+        
+        if self.pos: self.update_ruta()

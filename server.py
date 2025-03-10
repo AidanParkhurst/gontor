@@ -11,6 +11,10 @@ import json
 
 from entorno import Entorno
 
+async def run_simulation(entorno, entregas_deseados):
+    while entorno.entregas < entregas_deseados:
+        entorno.step()
+
 async def handler(websocket):
     async for message in websocket:
         print("Received:", message)
@@ -22,11 +26,19 @@ async def handler(websocket):
         length = int(data.get("length", 53))
         obstaculos = data.get("obstacles", [])
         metas = data.get("targets", [(width-1, length-1)])
+        entregas_deseados = data.get("deliveries", 2000)
         generar_txt = data.get("generate_txt", False)
-        entorno = Entorno(num_agents, width, length, punto_recogida=(1,1), pos_iniciales=pos_iniciales, obstaculos=obstaculos, puntos_entregas=metas)
+        entorno = Entorno(num_agents, width, length, pos_iniciales=pos_iniciales, obstaculos=obstaculos, puntos_entregas=metas)
 
-        for i in range(500):
-            entorno.step()
+        # Run the simulation in an async task
+        simulation_task = asyncio.create_task(run_simulation(entorno, entregas_deseados))
+
+        # Keep the connection alive while the simulation runs
+        while not simulation_task.done():
+            await asyncio.sleep(1)
+
+        # Wait for the simulation to complete
+        await simulation_task
 
         rutas = []
         metas = []
