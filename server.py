@@ -25,7 +25,7 @@ async def handler(websocket):
         generar_txt = data.get("generate_txt", False)
         entorno = Entorno(num_agents, width, length, punto_recogida=(1,1), pos_iniciales=pos_iniciales, obstaculos=obstaculos, puntos_entregas=metas)
 
-        for i in range(100):
+        for i in range(500):
             entorno.step()
 
         rutas = []

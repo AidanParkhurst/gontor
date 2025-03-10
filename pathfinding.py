@@ -54,12 +54,11 @@ def aestrella(entorno, inicio, fin, agentes_para_evitar=None):
             while nodo_actual:
                 camino.append(nodo_actual.pos)
                 nodo_actual = nodo_actual.padre
+            
+            print("Camino:", camino[::-1])
             return camino[::-1][1:]
         # Generar los nodos sucesores
         for vecino in entorno.grid.get_neighborhood(nodo_actual.pos, moore=False, include_center=False):
-            # Si el vecino está ocupado, ignorarlo
-            if not entorno.grid.is_cell_empty(vecino):
-                continue
             # Crear el nodo sucesor
             sucesor = Nodo(vecino, nodo_actual, fin)
             # Si el nodo sucesor está en la lista de nodos cerrados, ignorarlo

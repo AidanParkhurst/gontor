@@ -30,6 +30,9 @@ class Robot(Agent):
         if not self.ruta:
             destino = self.destinos[-1]
             self.ruta = aestrella(self.model, self.pos, destino)
+            if not self.ruta:
+                print(f"Robot {self.id} está atrapado")
+                return
         else:   
             # Si hay ruta, y va a chocar con otro robot, espera o cambia de ruta
             if self.va_a_chocar(self.ruta[0]): self.ruta.insert(0, self.pos)
@@ -45,11 +48,13 @@ class Robot(Agent):
                 agentes_para_evitar.append(agent)
         
         if agentes_para_evitar:
+            print(f"Robot {self.id} va a chocar con {len(agentes_para_evitar)} agentes")
             otro_robot_es_especial = False
             for agent in agentes_para_evitar:
                 otro_robot_es_especial = otro_robot_es_especial or (agent.pos == self.model.punto_recogida or (agent.pos in self.model.puntos_entregas))
-            punto_especial = self.pos == self.model.punto_recogida or (self.pos in self.model.puntos_entregas)
+            punto_especial = (self.pos == self.model.punto_recogida) or (self.pos in self.model.puntos_entregas)
             especial = punto_especial and not otro_robot_es_especial
+            print(f"Robot {self.id} es especial: {especial}")
             if especial or (not especial and self.id < min([agent.id for agent in agentes_para_evitar])):
                 print(f"Robot {self.id} wins the tie!")
                 self.force_update_ruta(agentes_para_evitar)
@@ -65,8 +70,10 @@ class Robot(Agent):
 
     def step(self):
         self.historia.append(self.pos)
-        # print("Ruta:", self.ruta)
-        # print("Meta", self.destinos[-1])
+        print("Robot:",self.id,"Pos:", self.pos)
+        print("Robot:",self.id,"Tiene paquete:", self.tiene_paquete)
+        print("Robot:",self.id,"Ruta:", self.ruta)
+        print("Robot:",self.id,"Meta", self.destinos[-1])
         # Si la celda actual es la celda destino, deja o recoge un paquete
         if self.pos == self.destinos[-1]: self.actuar()
 
