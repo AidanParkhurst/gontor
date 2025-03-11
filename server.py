@@ -25,10 +25,15 @@ async def handler(websocket):
         width = int(data.get("width", 30))
         length = int(data.get("length", 53))
         obstaculos = data.get("obstacles", [])
-        metas = data.get("targets", [(width-1, length-1)])
+        puntos_recogidas = data.get("puntos_recogidas", [(0,0)])
+        metas = data.get("puntos_entregas", [(width-1, length-1)])
         entregas_deseados = data.get("deliveries", 2000)
         generar_txt = data.get("generate_txt", False)
-        entorno = Entorno(num_agents, width, length, pos_iniciales=pos_iniciales, obstaculos=obstaculos, puntos_entregas=metas)
+        entorno = Entorno(num_agents, width, length,
+                          puntos_recogidas=puntos_recogidas,
+                          pos_iniciales=pos_iniciales,
+                          obstaculos=obstaculos,
+                          puntos_entregas=metas)
 
         # Run the simulation in an async task
         simulation_task = asyncio.create_task(run_simulation(entorno, entregas_deseados))

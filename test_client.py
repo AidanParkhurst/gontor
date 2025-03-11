@@ -59,6 +59,9 @@ async def client():
             "initial_positions": initial_positions,
             "width": width if width.strip() != "" else 30,
             "length": length if length.strip() != "" else 53,
+            "deliveries": 50,
+            "puntos_recogidas": [(0,0), (0,3), (0,8)],
+            "puntos_entregas": [(9,9), (9,6), (9,3)],
             "obstacles": obstacles if obstacles else [],
             "generate_txt": generate_txt.lower().strip() == "y"
             }
